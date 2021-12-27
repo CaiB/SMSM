@@ -10,7 +10,7 @@
     [
         {
             "Name": "Save Periodically",
-            "Command": "save",
+            "Task": "save",
             "Minutes": [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
             "Exceptions":
             [
@@ -22,7 +22,7 @@
         },
         {
             "Name": "Restart Nightly",
-            "Command": "restart",
+            "Task": "restart",
             "Minutes": [10],
             "Hours": [3]
         }

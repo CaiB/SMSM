@@ -1,0 +1,30 @@
+﻿{
+    "Name": "Test MC Server",
+    "JavaPath": "C:\\Program Files\\SOMETHING\\bin\\java.exe",
+    "MinRAM": 4096,
+    "MaxRAM": 8192,
+    "JavaArgs": "",
+    "ServerJar": "minecraft_server.jar",
+    "ServerArgs": "--nogui",
+    "Schedule":
+    [
+        {
+            "Name": "Save Periodically",
+            "Command": "save",
+            "Minutes": [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
+            "Exceptions":
+            [
+                {
+                    "Minutes": [10, 15],
+                    "Hours": [3]
+                }
+            ]
+        },
+        {
+            "Name": "Restart Nightly",
+            "Command": "restart",
+            "Minutes": [10],
+            "Hours": [3]
+        }
+    ]
+}

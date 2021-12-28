@@ -1,0 +1,51 @@
+﻿{
+    "Name": "Test",
+    "ServerDir": "C:\\Minecraft\\",
+    "JavaPath": "C:\\Program Files\\AdoptOpenJDK\\jre-8.0.275.1-hotspot\\bin\\java.exe",
+    "MinRAM": 4096,
+    "MaxRAM": 8192,
+    "JavaArgs": "",
+    "ServerJar": "minecraft_server.jar",
+    "ServerArgs": "",
+    "BackupsToKeep": 3,
+    "BackupExclusions":
+    [
+        "dynmap\\web\\tiles\\*"
+    ],
+    "Schedule":
+    [
+        {
+            "Name": "Save Periodically",
+            "Task": "save",
+            "Minutes": [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55],
+            "Exceptions":
+            [
+                {
+                    "Minutes": [10, 15],
+                    "Hours": [3],
+                    "Days": "All",
+                    "Weekdays": "All"
+                }
+            ]
+        },
+        {
+            "Name": "Restart Nightly",
+            "Task": "restart",
+            "Minutes": [10],
+            "Hours": [3]
+        },
+        {
+            "Name": "Test Messages",
+            "Task": "message TESTING THE MESSAGES",
+            "Exceptions":
+            [
+                {
+                    "Minutes": [27],
+                    "Hours": "All",
+                    "Days": "All",
+                    "Weekdays": "All"
+                }
+            ]
+        }
+    ]
+}

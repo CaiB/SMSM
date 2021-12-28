@@ -7,9 +7,10 @@ public class ConfigReader
 {
     public static bool ReadConfig(string path)
     {
-        if (!File.Exists(path)) { throw new FileNotFoundException($"Config file was not found at '{path}'."); }
+        string FullPath = Path.GetFullPath(path);
+        if (!File.Exists(FullPath)) { throw new FileNotFoundException($"Config file was not found at '{FullPath}'."); }
         JObject JSON;
-        using (StreamReader Reader = File.OpenText(path)) { JSON = JObject.Parse(Reader.ReadToEnd()); }
+        using (StreamReader Reader = File.OpenText(FullPath)) { JSON = JObject.Parse(Reader.ReadToEnd()); }
 
         string Name = ReadProperty(JSON, "Name", "Minecraft Server", true);
         Log.SetName(Name);

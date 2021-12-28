@@ -1,7 +1,7 @@
 ﻿using SMSMService.Tasks;
 
 namespace SMSMService;
-public static class SMSM
+public class SMSM : BackgroundService
 {
     public const bool USE_NOGUI = false; // Only used for debugging purposes.
     public static string? JavaPath;
@@ -9,7 +9,14 @@ public static class SMSM
     public static string? ServerDir;
     public static string ServerName = "No Name";
 
-    public static void Main(string[] args)
+    private readonly ILogger<SMSM> Logger;
+
+    public SMSM(ILogger<SMSM> logger)
+    {
+        this.Logger = logger;
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         TaskHandler.AddTasks();
 
@@ -24,9 +31,10 @@ public static class SMSM
         Scheduler.Start();
 
         RemoteConnector.Start(ServerName);
-        
-        while (true)
+
+        while (!stoppingToken.IsCancellationRequested)
         {
+            // TODO: Remove all this
             char Key = Console.ReadKey().KeyChar;
             if (Key == 'w') { TaskHandler.Tasks["start"].Invoke(null); }
             if (Key == 'e') { TaskHandler.Tasks["stop"].Invoke(null); }
@@ -34,6 +42,9 @@ public static class SMSM
             if (Key == 's') { TaskHandler.Tasks["save"].Invoke(null); }
             if (Key == 'b') { TaskHandler.Tasks["backup"].Invoke(null); }
             if (Key == 'x') { break; }
+
+            this.Logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            await Task.Delay(1000, stoppingToken);
         }
 
         RemoteConnector.Stop();

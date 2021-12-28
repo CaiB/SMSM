@@ -38,6 +38,7 @@ public static class SMSM
 
         RemoteConnector.Stop();
         Scheduler.Stop();
+        //Server.SendInput("/stop");
     }
     
 }

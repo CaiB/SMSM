@@ -1,11 +1,8 @@
 ﻿using Microsoft.Extensions.FileSystemGlobbing;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SMSMService.Tasks
 {
@@ -37,7 +34,7 @@ namespace SMSMService.Tasks
             FileMatcher.AddInclude("**/*");
         }
 
-        public static void Run()
+        private static void DoBackup()
         {
             if (BackupPath == null || FileMatcher == null || RootPath == null) { Log.Error("Not ready to take a backup. Check the SMSM log for errors at startup."); return; }
 
@@ -79,7 +76,8 @@ namespace SMSMService.Tasks
 
             // Create new backup
             string Date = DateTime.Now.ToString(DATE_FORMAT);
-            string CurrentBackup = Path.Combine(BackupPath, $"SMSM_{Date}.zip");
+            string NewFileName = $"SMSM_{Date}.zip";
+            string CurrentBackup = Path.Combine(BackupPath, NewFileName);
 
             int FileCount = 0;
             using (FileStream ZIPFileStream = new(CurrentBackup, FileMode.Create))
@@ -109,7 +107,51 @@ namespace SMSMService.Tasks
                     }
                 }
             }
-            Log.Info($"Backed up {FileCount} files.");
+            Log.Info($"Backed up {FileCount} files into {NewFileName}");
+        }
+
+        private static bool SaveFinished = false;
+        private static bool AutosaveDisabled = false;
+
+        public static void Run()
+        {
+            SaveFinished = false;
+            AutosaveDisabled = false;
+            Server.ServerOutput += HandleServerOutput;
+            Server.SendInput("/save-all");
+            Server.SendInput("/save-off");
+
+            // Wait for up to 10 seconds for the server to finish saving.
+            Stopwatch TimeCheck = new();
+            TimeCheck.Start();
+            while (TimeCheck.ElapsedMilliseconds < 10000)
+            {
+                if (SaveFinished && AutosaveDisabled) { break; }
+                Thread.Sleep(100);
+            }
+            TimeCheck.Stop();
+            Server.ServerOutput -= HandleServerOutput;
+
+            if (!SaveFinished)
+            {
+                Log.Error("Could not take backup because the server didn't finish saving the world in time.");
+                Server.SendInput("/save-on");
+                return;
+            }
+
+            Thread.Sleep(500);
+            DoBackup();
+            Thread.Sleep(500);
+            Server.SendInput("/save-on");
+        }
+
+        private static void HandleServerOutput(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                if (e.Data.EndsWith("Turned off world auto-saving")) { AutosaveDisabled = true; }
+                else if (e.Data.EndsWith("Saved the world")) { SaveFinished = true; }
+            }
         }
     }
 }

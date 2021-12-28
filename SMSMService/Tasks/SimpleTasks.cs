@@ -51,12 +51,7 @@ namespace SMSMService.Tasks
             Tasks.Add("backup",
                 (string? args) =>
                 {
-                    Server.SendInput("/save-all");
-                    Server.SendInput("/save-off");
-                    Thread.Sleep(500); // TODO: Wait for the output that says this was done to make sure we aren't starting too early.
                     BackupTask.Run();
-                    Thread.Sleep(500);
-                    Server.SendInput("/save-on");
                     return true;
                 }
             );

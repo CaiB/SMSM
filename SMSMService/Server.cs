@@ -19,11 +19,17 @@ public static class Server
                 Arguments = SMSM.JavaArgs,
                 WorkingDirectory = SMSM.ServerDir,
                 FileName = SMSM.JavaPath,
-                RedirectStandardInput = true
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
             };
-            ServerProc.Exited += ServerExitHandler;
             ServerProc.EnableRaisingEvents = true;
+            ServerProc.Exited += ServerExitHandler;
+            ServerProc.OutputDataReceived += ServerOutputHandler;
+            ServerProc.ErrorDataReceived += ServerErrorHandler;
             ServerProc.Start();
+            ServerProc.BeginOutputReadLine();
+            ServerProc.BeginErrorReadLine();
             ServerReady = true;
             Log.Info($"Server process started as PID {ServerProc.Id}");
             return true;
@@ -59,5 +65,19 @@ public static class Server
     {
         Log.Info("Server process exited.");
         if (ServerProc != null && ServerProc.HasExited) { ServerProc = null; }
+    }
+
+    public static event DataReceivedEventHandler? ServerOutput, ServerError;
+
+    private static void ServerOutputHandler(object sender, DataReceivedEventArgs evt)
+    {
+        if (evt.Data == null) { return; }
+        Log.Server(evt.Data);
+        ServerOutput?.Invoke(sender, evt);
+    }
+
+    private static void ServerErrorHandler(object sender, DataReceivedEventArgs evt)
+    {
+        ServerError?.Invoke(sender, evt);
     }
 }

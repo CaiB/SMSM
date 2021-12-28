@@ -3,6 +3,13 @@
 public static class Log
 {
     private static string ServerName = "Minecraft Server";
+
+    public static void Server(string message)
+    {
+        string FormattedMsg = $"[SRV][{ServerName}] {message}";
+        Console.WriteLine(FormattedMsg);
+        // TODO: Output this elsewhere? Remote conn?
+    }
     public static void Info(string message)
     {
         string FormattedMsg = $"[INF][{ServerName}] {message}";

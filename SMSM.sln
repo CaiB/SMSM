@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SMSMRemoteTool", "SMSMRemoteTool\SMSMRemoteTool.csproj", "{81BB64C7-C604-43D7-805B-838EA1E04BD2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{03C4B03F-C915-4E22-AD9A-3573FE3E3BB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03C4B03F-C915-4E22-AD9A-3573FE3E3BB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03C4B03F-C915-4E22-AD9A-3573FE3E3BB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81BB64C7-C604-43D7-805B-838EA1E04BD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81BB64C7-C604-43D7-805B-838EA1E04BD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81BB64C7-C604-43D7-805B-838EA1E04BD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81BB64C7-C604-43D7-805B-838EA1E04BD2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -113,6 +113,7 @@ public class ConfigReader
         SMSM.JavaPath = JavaPath;
         SMSM.JavaArgs = Arguments;
         SMSM.ServerDir = ServerDir;
+        SMSM.ServerName = Name;
         Scheduler.Tasks = Schedule;
 
         return true;

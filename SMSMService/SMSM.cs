@@ -7,6 +7,7 @@ public static class SMSM
     public static string? JavaPath;
     public static string? JavaArgs;
     public static string? ServerDir;
+    public static string ServerName = "No Name";
 
     public static void Main(string[] args)
     {
@@ -20,6 +21,8 @@ public static class SMSM
         }
 
         Scheduler.Start();
+
+        RemoteConnector.Start(ServerName);
         
         while (true)
         {
@@ -31,6 +34,9 @@ public static class SMSM
             if (Key == 'b') { TaskHandler.Tasks["backup"].Invoke(null); }
             if (Key == 'x') { break; }
         }
+
+        RemoteConnector.Stop();
+        Scheduler.Stop();
     }
     
 }

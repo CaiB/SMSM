@@ -5,6 +5,8 @@ namespace SMSMService;
 public static class Server
 {
     private static Process? ServerProc;
+    private static bool ServerReady = false;
+    private static object ServerLockObj = new object();
     public static bool StartServer()
     {
         if (ServerProc != null) { return false; }
@@ -22,6 +24,7 @@ public static class Server
             ServerProc.Exited += ServerExitHandler;
             ServerProc.EnableRaisingEvents = true;
             ServerProc.Start();
+            ServerReady = true;
             Log.Info($"Server process started as PID {ServerProc.Id}");
             return true;
         }
@@ -34,14 +37,18 @@ public static class Server
 
     public static void SendInput(string input)
     {
-        if (ServerProc != null)
+        lock (ServerLockObj)
         {
-            ServerProc.StandardInput.WriteLine(input);
+            if (ServerProc != null && ServerReady)
+            {
+                ServerProc.StandardInput.WriteLine(input);
+            }
         }
     }
 
     public static void KillServer()
     {
+        ServerReady = false;
         ServerProc?.Kill();
         ServerProc = null;
     }

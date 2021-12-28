@@ -73,7 +73,7 @@ Every 5 minutes, except at 03:10
 ]
 ```
 
-Every hour, except on Sundays at midnight:
+Every hour, except on Sundays at midnight or Wednesdays at noon:
 ```json
 "Minutes": [0],
 "Exceptions":
@@ -83,6 +83,12 @@ Every hour, except on Sundays at midnight:
         "Hours": [0],
         "Days": "All",
         "Weekdays": ["Sun"]
+    },
+    {
+        "Minutes": "All",
+        "Hours": [12],
+        "Days": "All",
+        "Weekdays": ["Wed"]
     }
 ]
 ```

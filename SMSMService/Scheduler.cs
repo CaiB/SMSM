@@ -59,7 +59,7 @@ public static class Scheduler
         {
             AutoReset = true,
             Enabled = true,
-            Interval = 5 * 1000 // Every minute
+            Interval = 60 * 1000 // Every minute
         };
         Timer.Elapsed += HandleTimer;
         Timer.Start();

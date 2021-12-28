@@ -1,11 +1,12 @@
 ﻿{
     "Name": "Test MC Server",
+    "ServerDir": "C:\\Minecraft\\",
     "JavaPath": "C:\\Program Files\\SOMETHING\\bin\\java.exe",
     "MinRAM": 4096,
     "MaxRAM": 8192,
     "JavaArgs": "",
     "ServerJar": "minecraft_server.jar",
-    "ServerArgs": "--nogui",
+    "ServerArgs": "",
     "Schedule":
     [
         {

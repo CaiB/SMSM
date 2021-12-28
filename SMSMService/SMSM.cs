@@ -10,19 +10,25 @@ public static class SMSM
 
     public static void Main(string[] args)
     {
+        TaskHandler.AddTasks();
+
         bool ConfigResult = ConfigReader.ReadConfig("config.json");
-        if (ConfigResult)
+        if (!ConfigResult)
         {
-            Server.StartServer();
+            Log.Error("The configuration could not be parsed, and SMSM will now exit.");
+            Environment.Exit(-2);
         }
+
+        Scheduler.Start();
         
         while (true)
         {
             char Key = Console.ReadKey().KeyChar;
-            if (Key == 'e') { new StopServer().DoTask(null); }
-            if (Key == 'r') { new RestartServer().DoTask(null); }
-            if (Key == 's') { new SaveWorld().DoTask(null); }
-            if (Key == 'b') { new CreateBackup().DoTask(null); }
+            if (Key == 'w') { TaskHandler.Tasks["start"].Invoke(null); }
+            if (Key == 'e') { TaskHandler.Tasks["stop"].Invoke(null); }
+            if (Key == 'r') { TaskHandler.Tasks["restart"].Invoke(null); }
+            if (Key == 's') { TaskHandler.Tasks["save"].Invoke(null); }
+            if (Key == 'b') { TaskHandler.Tasks["backup"].Invoke(null); }
             if (Key == 'x') { break; }
         }
     }

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SMSMService.Tasks;
+using System;
 
 namespace SMSMService;
-public class Scheduler
+public static class Scheduler
 {
     public static int[] DEFAULT_MINUTES = 
     {
@@ -52,12 +49,49 @@ public class Scheduler
         }
         return Result;
     }
+
+    public static ScheduledTask[]? Tasks;
+    private static System.Timers.Timer? Timer;
+
+    public static void Start()
+    {
+        Timer = new()
+        {
+            AutoReset = true,
+            Enabled = true,
+            Interval = 5 * 1000 // Every minute
+        };
+        Timer.Elapsed += HandleTimer;
+        Timer.Start();
+    }
+
+    public static void Stop()
+    {
+        Timer?.Stop();
+        Timer?.Dispose();
+    }
+
+    private static void HandleTimer(object? sender, System.Timers.ElapsedEventArgs evt)
+    {
+        if (Tasks == null) { return; }
+
+        DateTime Now = DateTime.Now;
+
+        foreach (ScheduledTask Task in Tasks)
+        {
+            if (Task.IsScheduledAtTime(Now) && !Task.HasExceptionAtTime(Now))
+            {
+                TaskHandler.Tasks[Task.Task].Invoke(Task.TaskArgs);
+            }
+        }
+    }
 }
 
 public class ScheduledTask
 {
     public string Name { get; init; }
     public string Task { get; init; }
+    public string? TaskArgs { get; init; }
     public int[] Minutes { get; init; }
     public int[] Hours { get; init; }
     public int[] Days { get; init; }
@@ -73,6 +107,24 @@ public class ScheduledTask
         this.Days = Array.Empty<int>();
         this.Weekdays = Array.Empty<DayOfWeek>();
         this.Exceptions = Array.Empty<TaskScheduleException>();
+    }
+
+    /// <summary>Checks to see if this task is supposed to run in the minute given by the DateTime.</summary>
+    /// <remarks>Does not check schedule exceptions.</remarks>
+    /// <param name="time">The time to check</param>
+    /// <returns>true if the task's regular schedule includes the given minute</returns>
+    public bool IsScheduledAtTime(DateTime time) => this.Days.Contains(time.Day) && this.Weekdays.Contains(time.DayOfWeek) && this.Hours.Contains(time.Hour) && this.Minutes.Contains(time.Minute);
+
+    /// <summary>Checks to see if this task has a schedule exception preventing it from running in the minute given by the DateTime.</summary>
+    /// <param name="time">The time to check</param>
+    /// <returns>true if there is a schedule exception in effect at the given minute, false otherwise</returns>
+    public bool HasExceptionAtTime(DateTime time)
+    {
+        foreach (TaskScheduleException Exc in this.Exceptions)
+        {
+            if (Exc.Days.Contains(time.Day) && Exc.Weekdays.Contains(time.DayOfWeek) && Exc.Hours.Contains(time.Hour) && Exc.Minutes.Contains(time.Minute)) { return true; }
+        }
+        return false;
     }
 }
 

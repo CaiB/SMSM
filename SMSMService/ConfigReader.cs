@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using SMSMService.Tasks;
 using System;
 
 namespace SMSMService;
@@ -43,8 +44,23 @@ public class ConfigReader
                     Exceptions = ParsedExceptions.ToArray();
                 }
 
-                string? TaskCommand = ReadProperty<string?>(ScheduleEntry, "Task", null, true);
-                if (TaskCommand == null) { continue; }
+                string? TaskDescription = ReadProperty<string?>(ScheduleEntry, "Task", null, true);
+                if (TaskDescription == null) { continue; }
+                string TaskCommand;
+                string? TaskArgs = null;
+
+                int SpaceIndex = TaskDescription.IndexOf(' ');
+                if (SpaceIndex > 0)
+                {
+                    TaskArgs = TaskDescription.Substring(SpaceIndex + 1);
+                    TaskCommand = TaskDescription.Substring(0, SpaceIndex);
+                }
+                else { TaskCommand = TaskDescription; }
+                if (!TaskHandler.Tasks.ContainsKey(TaskCommand))
+                {
+                    Log.Warn($"Task specified unknown action '{TaskCommand}' in '{TaskDescription}'. It will be ignored.");
+                    continue;
+                }
 
                 Tasks.Add(new()
                 {
@@ -54,7 +70,8 @@ public class ConfigReader
                     Hours = ReadArray(ScheduleEntry, "Hours", Scheduler.DEFAULT_HOURS, false),
                     Days = ReadArray(ScheduleEntry, "Days", Scheduler.DEFAULT_DAYS, false),
                     Weekdays = Scheduler.ParseWeekdays(ReadArray(ScheduleEntry, "Weekdays", Scheduler.DEFAULT_WEEKDAYS, false)),
-                    Exceptions = Exceptions
+                    Exceptions = Exceptions,
+                    TaskArgs = TaskArgs
                 });
             }
             Schedule = Tasks.ToArray();
@@ -96,6 +113,7 @@ public class ConfigReader
         SMSM.JavaPath = JavaPath;
         SMSM.JavaArgs = Arguments;
         SMSM.ServerDir = ServerDir;
+        Scheduler.Tasks = Schedule;
 
         return true;
     }

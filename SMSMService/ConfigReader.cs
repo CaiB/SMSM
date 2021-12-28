@@ -20,6 +20,8 @@ public class ConfigReader
         string JavaArgs = ReadProperty(JSON, "JavaArgs", "", false);
         string? ServerJar = ReadProperty<string?>(JSON, "ServerJar", null, true);
         string ServerArgs = ReadProperty(JSON, "ServerArgs", "", false);
+        int BackupsToKeep = ReadProperty(JSON, "BackupsToKeep", 20, true);
+        string[] BackupExclusions = ReadArray(JSON, "BackupExclusions", Array.Empty<string>(), false);
 
         ScheduledTask[] Schedule = Array.Empty<ScheduledTask>();
         if (JSON.ContainsKey("Schedule") && JSON["Schedule"] is JArray ScheduleArray)
@@ -115,6 +117,8 @@ public class ConfigReader
         SMSM.ServerDir = ServerDir;
         SMSM.ServerName = Name;
         Scheduler.Tasks = Schedule;
+        BackupTask.MaxBackupCount = BackupsToKeep;
+        BackupTask.Exclusions = BackupExclusions;
 
         return true;
     }

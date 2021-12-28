@@ -7,6 +7,11 @@
     "JavaArgs": "",
     "ServerJar": "minecraft_server.jar",
     "ServerArgs": "",
+    "BackupsToKeep": 20,
+    "BackupExclusions":
+    [
+        "dynmap\\web\\tiles\\*"
+    ],
     "Schedule":
     [
         {

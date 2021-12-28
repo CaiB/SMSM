@@ -6,7 +6,7 @@ public static class Server
 {
     private static Process? ServerProc;
     private static bool ServerReady = false;
-    private static object ServerLockObj = new object();
+    private static readonly object ServerLockObj = new();
     public static bool StartServer()
     {
         if (ServerProc != null) { return false; }

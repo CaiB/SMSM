@@ -19,6 +19,7 @@ public static class SMSM
             Log.Error("The configuration could not be parsed, and SMSM will now exit.");
             Environment.Exit(-2);
         }
+        BackupTask.Init();
 
         Scheduler.Start();
 

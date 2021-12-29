@@ -1,14 +1,23 @@
-using SMSMService;
+namespace SMSMService;
 
-IHost host = Host.CreateDefaultBuilder(args)
-    .UseWindowsService(options =>
+public static class Start
+{
+    public static async Task Main(string[] args)
     {
-        options.ServiceName = "SMSM Minecraft Server";
-    })
-    .ConfigureServices(services =>
-    {
-        services.AddHostedService<SMSM>();
-    })
-    .Build();
+        IHost host = Host.CreateDefaultBuilder(args)
+        .UseWindowsService(options =>
+        {
+            options.ServiceName = "SMSM Minecraft Server";
+        })
+        .ConfigureServices(services =>
+        {
+            services.AddHostedService<SMSM>();
+        })
+        .Build();
 
-await host.RunAsync();
+        await host.RunAsync();
+
+        SMSM.Stop();
+    }
+}
+

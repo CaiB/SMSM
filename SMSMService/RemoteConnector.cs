@@ -31,7 +31,12 @@ public static class RemoteConnector
                 lock (PipeRW) { PipeRW.WriteLine($"Connected to management interface on \"{ServerName}\"."); } // TODO: Send recent server output?
                 Log.Info("Management client connected.");
                 Log.Handlers += LogOutputHandler;
-                while(true)
+
+                float RAMUsage = Server.RAMUsage / 1000000F;
+                if (Server.ServerReady) { Log.Info($"Minecraft server is running, RAM usage: {RAMUsage:F1}MB"); }
+                else { Log.Info("Minecraft server is not running."); }
+
+                while (true)
                 {
                     string? Input = PipeRW.ReadLine();
                     if (Input != null)

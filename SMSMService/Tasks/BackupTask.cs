@@ -115,31 +115,34 @@ namespace SMSMService.Tasks
 
         public static void Run()
         {
-            SaveFinished = false;
-            AutosaveDisabled = false;
-            Server.ServerOutput += HandleServerOutput;
-            Server.SendInput("/save-all");
-            Server.SendInput("/save-off");
-
-            // Wait for up to 10 seconds for the server to finish saving.
-            Stopwatch TimeCheck = new();
-            TimeCheck.Start();
-            while (TimeCheck.ElapsedMilliseconds < 10000)
+            if (Server.ServerReady) // Don't try to wait for the server if it's not even running
             {
-                if (SaveFinished && AutosaveDisabled) { break; }
-                Thread.Sleep(100);
-            }
-            TimeCheck.Stop();
-            Server.ServerOutput -= HandleServerOutput;
+                SaveFinished = false;
+                AutosaveDisabled = false;
+                Server.ServerOutput += HandleServerOutput;
+                Server.SendInput("/save-all");
+                Server.SendInput("/save-off");
 
-            if (!SaveFinished)
-            {
-                Log.Error("Could not take backup because the server didn't finish saving the world in time.");
-                Server.SendInput("/save-on");
-                return;
-            }
+                // Wait for up to 10 seconds for the server to finish saving.
+                Stopwatch TimeCheck = new();
+                TimeCheck.Start();
+                while (TimeCheck.ElapsedMilliseconds < 10000)
+                {
+                    if (SaveFinished && AutosaveDisabled) { break; }
+                    Thread.Sleep(100);
+                }
+                TimeCheck.Stop();
+                Server.ServerOutput -= HandleServerOutput;
 
-            Thread.Sleep(500);
+                if (!SaveFinished)
+                {
+                    Log.Error("Could not take backup because the server didn't finish saving the world in time.");
+                    Server.SendInput("/save-on");
+                    return;
+                }
+
+                Thread.Sleep(500);
+            }
             DoBackup();
             Thread.Sleep(500);
             Server.SendInput("/save-on");

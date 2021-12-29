@@ -5,7 +5,8 @@ namespace SMSMService;
 public static class Server
 {
     private static Process? ServerProc;
-    private static bool ServerReady = false;
+    public static bool ServerReady { get; private set; } = false;
+    public static long RAMUsage { get => ServerProc?.WorkingSet64 ?? 0; }
     private static readonly object ServerLockObj = new();
     public static bool StartServer()
     {

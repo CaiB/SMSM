@@ -34,22 +34,16 @@ public class SMSM : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            // TODO: Remove all this
-            char Key = Console.ReadKey().KeyChar;
-            if (Key == 'w') { TaskHandler.Tasks["start"].Invoke(null); }
-            if (Key == 'e') { TaskHandler.Tasks["stop"].Invoke(null); }
-            if (Key == 'r') { TaskHandler.Tasks["restart"].Invoke(null); }
-            if (Key == 's') { TaskHandler.Tasks["save"].Invoke(null); }
-            if (Key == 'b') { TaskHandler.Tasks["backup"].Invoke(null); }
-            if (Key == 'x') { break; }
-
-            this.Logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
             await Task.Delay(1000, stoppingToken);
         }
+    }
 
+    public static void Stop()
+    {
+        Log.Info("SMSM exit requested.");
+        Server.SendInput("/stop");
         RemoteConnector.Stop();
         Scheduler.Stop();
-        //Server.SendInput("/stop");
     }
     
 }

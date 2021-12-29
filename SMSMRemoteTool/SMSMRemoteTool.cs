@@ -29,7 +29,7 @@ public static class SMSMRemoteTool
         ReadThread = new(ReadLoop) { Name = "Pipe Read Thread" };
         ReadThread.Start();
 
-        while (true)
+        while (!Exiting)
         {
             string? UserInput = Console.ReadLine();
             if (UserInput == null || UserInput.ToLowerInvariant() == "exit")
@@ -60,6 +60,7 @@ public static class SMSMRemoteTool
             Console.WriteLine($"-> {ReadResult}");
         }
         Console.WriteLine("Connection closed.");
+        Exiting = true;
     }
 
     private class PipeInterface : IDisposable

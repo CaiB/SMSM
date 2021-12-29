@@ -29,14 +29,39 @@ if(![File]::Exists($SMSMPath))
     exit;
 }
 
-$ServiceAccount = Get-Credential -Message 'Please enter the login information of the service account for this Minecraft server.';
+# This sets the login account on the service to its associated virtual account. Why is this so complex D:
+function Set-ServiceAccount
+{
+    param ([string] $ServiceName)
+
+    Add-Type -ReferencedAssemblies @('System.Management') -TypeDefinition @"
+    using System;
+    using System.Management;
+
+    namespace ServiceHelpers
+    {
+        public class Account
+        {
+            public static void SetUsername(string serviceName)
+            {
+                using (ManagementObject service = new ManagementObject(new ManagementPath("Win32_Service.Name='" + serviceName + "'")))
+                {
+                    object[] WMIParams = new object[11];
+                    WMIParams[6] = "NT Service\\" + serviceName;
+                    service.InvokeMethod("Change", WMIParams);
+                }
+            }
+        }
+    }
+"@
+    [ServiceHelpers.Account]::SetUsername($ServiceName);
+}
 
 $ServiceParams = 
 @{
     Name = "SMSM-$ServerName";
     BinaryPathName = "`"$SMSMPath`" `"$ConfigPath`"";
     DisplayName = "Minecraft Server $ServerName (SMSM)";
-    Credential = $ServiceAccount;
     StartupType = 'Automatic';
 };
 
@@ -44,8 +69,12 @@ Write-Host 'You are about to install the SMSM Service with the following setting
 Write-Host "  Service Name: $($ServiceParams.Name)";
 Write-Host "  Display Name: $($ServiceParams.DisplayName)";
 Write-Host "  Executable: $($ServiceParams.BinaryPathName)";
-Write-Host "  Service Account: $($ServiceParams.Credential.UserName)";
+Write-Host "  Service Account: `"NT Service\$($ServiceParams.Name)`"";
 
 $IsReady = Read-Host -Prompt 'Is the above information correct? (y/n)';
 if ($IsReady -NE 'y') { Write-Host 'Cancelled.'; }
-else { New-Service @ServiceParams; }
+else
+{
+    New-Service @ServiceParams;
+    Set-ServiceAccount $ServiceParams.Name;
+}

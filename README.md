@@ -19,14 +19,13 @@ Thanks to AMP for giving me the incentive to learn how to implement a Windows se
 ## Installation
 Prerequisite: [.NET 6](https://dotnet.microsoft.com/en-us/)
 - Make sure your Minecraft server is set up and ready to run.
-- Decide if you want to use an existing account, or create a new service account (recommended). Create it if necessary, and make sure the password is not set to expire. Ideally this should be a non-administrative account.
-- Place the SMSM files into a location where the chosen account has permissions to access (e.g. `C:\Program Files\SMSM\`)
-- Make sure the service account also has write permissions to the Minecraft server directory.
+- Place the SMSM files into a general location (e.g. `C:\Program Files\SMSM\`)
 - Copy the sample config `SampleConfig.json` to a convenient location (recommended in the same location as the server `.jar`), and optionally rename it.
 - Edit the config, making sure to set `Name`, `ServerDir`, `JavaPath`, `ServerJar`, and the `Schedule`. Change any other settings you desire. See below for explanations.
 - Open an **Administrative** PowerShell window, and `cd` to the location where you placed SMSM.
-- Run `.\Install-SMSM.ps1` and answer the prompts.
-- Your service should now be installed. Verify by using `services.msc`, look for the name `Minecraft server ____ (SMSM)`.
+- Run `.\Install-SMSM.ps1` and answer the prompts. Don't close this window when done.
+- Your service should now be installed. Verify by using `services.msc`, look for the name `Minecraft Server ____ (SMSM)`. It should be stopped, do not start it yet.
+- Assign the user `NT Service\<Name>` (as shown by the install script) write permissions to the folder where SMSM is installed, as well as the entire Minecraft server folder and all contents. This is the service account that the server will run under, and it has minimal permissions.
 - Start the service. This is only required this first time, it will auto-start at boot from now on.
 - Make sure the service shows as `Running`, and you receive no errors trying to start it.
 - Your Minecraft server should be running. You're done!

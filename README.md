@@ -4,19 +4,43 @@ A Windows service to help you run a Minecraft server, taking care of only the op
 
 This is intended for people who know how to set up and configure a Minecraft server without hand-holding.
 
-**(Intended) Features:**
+**Features:**
 - Runs as a Windows service
 - Supports multiple independent instances on the same machine
 - Allows scheduling of actions
 - Can take backups of the world
 - Doesn't fuck up your configs
+- Doesn't use Docker
 
-Thanks AMP for giving me the incentive to learn how to implement a Windows service :)
+Thanks to AMP for giving me the incentive to learn how to implement a Windows service :)
 
-## Scheduling Tasks
-SMSM has a simple task scheduler built in. You can specify as many tasks as you want, but the order in which they run if scheduled at the same time is not guaranteed.
+⚠ SMSM doesn't make any attempt to be secure. The remote management utility connects via a named pipe, which may be network-accessible in some configurations. It usually requires administrator privileges to access, but this can be disabled if you misconfigure Windows. Please verify that access is properly restricted after installation!
 
-### Tasks
+## Installation
+Prerequisite: [.NET 6](https://dotnet.microsoft.com/en-us/)
+- Make sure your Minecraft server is set up and ready to run.
+- Decide if you want to use an existing account, or create a new service account (recommended). Create it if necessary, and make sure the password is not set to expire. Ideally this should be a non-administrative account.
+- Place the SMSM files into a location where the chosen account has permissions to access (e.g. `C:\Program Files\SMSM\`)
+- Make sure the service account also has write permissions to the Minecraft server directory.
+- Copy the sample config `SampleConfig.json` to a convenient location (recommended in the same location as the server `.jar`), and optionally rename it.
+- Edit the config, making sure to set `Name`, `ServerDir`, `JavaPath`, `ServerJar`, and the `Schedule`. Change any other settings you desire. See below for explanations.
+- Open an **Administrative** PowerShell window, and `cd` to the location where you placed SMSM.
+- Run `.\Install-SMSM.ps1` and answer the prompts.
+- Your service should now be installed. Verify by using `services.msc`, look for the name `Minecraft server ____ (SMSM)`.
+- Start the service. This is only required this first time, it will auto-start at boot from now on.
+- Make sure the service shows as `Running`, and you receive no errors trying to start it.
+- Your Minecraft server should be running. You're done!
+
+You can install multiple servers, by reusing the same SMSM files, and simply creating another `config.json` pointing to a different server. Just repeat the above steps for the second config.
+
+## Management
+To manage the server, start the management utility from an **administrator** PowerShell window: `.\SMSMRemoteTool.exe <Name>`, where `Name` is the name used to install the service (should be the `Name` in the `config.json`).  
+If you are successfully connected, you should see `-> Connected to management interface on "<Name>".`
+You can now enter any command from the section below.  
+Once you are done, type `exit` and press enter. This stops the remote session, but does **not** turn off the server. To completely shut down the server, use the `stop` command, and then stop the service.
+
+## Commands
+These are used both by the remote management tool, and by the task scheduler.
 | Task | Argument | Description |
 |---|---|---|
 | `"start"` | None | Starts the server if it is not running. |
@@ -27,9 +51,14 @@ SMSM has a simple task scheduler built in. You can specify as many tasks as you 
 | `"save"` | None | Saves all non-saved changes to the world. |
 | `"backup"` | None | Disables auto-saving, takes a backup of the world, then re-enables auto-saving. |
 
+## Scheduling Tasks
+SMSM has a simple task scheduler built in. You can specify as many tasks as you want, but the order in which they run if scheduled at the same time is not guaranteed.
+
 ### Schedule Definition
-To define a scheduled task, add an object to the `"Schedule"` array. Specify a `"Name"` and the `"Task"` (see above). Then specify the times you want to run the task using `"Minutes"`, `"Hours"`, `"Days"`, and `"Weekdays"`. It will run if all 4 lists have a match for the current time. By default, each of these is set to include all possible values. Override any you want to specify.  
-Here's some examples:
+To define a scheduled task, add an object to the `"Schedule"` array. Specify a `"Name"` and the `"Task"` (see `Commands` above). Then specify the times you want to run the task using `"Minutes"`, `"Hours"`, `"Days"`, and `"Weekdays"`. It will run if all 4 lists have a match for the current time. By default, each of these is set to include all possible values. Override any you want to specify.
+
+
+**Examples:**
 
 Every 5 minutes:
 ```json

@@ -31,13 +31,31 @@ Prerequisite: [.NET 6](https://dotnet.microsoft.com/en-us/)
 - Make sure the service shows as `Running`, and you receive no errors trying to start it.
 - Your Minecraft server should be running. You're done!
 
-You can install multiple servers, by reusing the same SMSM files, and simply creating another `config.json` pointing to a different server. Just repeat the above steps for the second config.
+You can install multiple servers, by reusing the same SMSM files, and simply creating another config `.json` pointing to a different server. Just repeat the above steps for the second config.
 
 ## Management
-To manage the server, start the management utility from an **administrator** PowerShell window: `.\SMSMRemoteTool.exe <Name>`, where `Name` is the name used to install the service (should be the `Name` in the `config.json`).  
+To manage the server, start the management utility from an **administrator** PowerShell window: `.\SMSMRemoteTool.exe <Name>`, where `Name` is the name used to install the service (should be the `Name` in the config `.json`).  
 If you are successfully connected, you should see `-> Connected to management interface on "<Name>".`
 You can now enter any command from the section below.  
 Once you are done, type `exit` and press enter. This stops the remote session, but does **not** turn off the server. To completely shut down the server, use the `stop` command, and then stop the service.
+
+## Configuration
+All settings are configured in the config `.json` file you selected when installing the service. The below table explains the options available.
+
+| Option | Required? | Default | Type | Description |
+|---|---|---|---|---|
+| `Name` | **Required** | N/A | string | The name of this instance. Used to name the service, access the management interface, and in various other locations.  A name without spaces is recommended. |
+| `ServerDir` | **Required** | N/A | Path string | The location of the Minecraft server files. The server JAR should be located in this folder. |
+| `JavaPath` | Recommended | Java on PATH | Path string | A path to `java.exe`, including the filename. If not specified, SMSM attempts to use your system default Java installation, which may be incorrect, so it is recommended to set this. |
+| `MinRAM` | Optional | 1024 | int | The amount of RAM to assign as the minimum, in MB. |
+| `MaxRAM` | Optional | 2048 | int | The amount of RAM to assign as the maximum, in MB. |
+| `JavaArgs` | Optional | `""` | string | Additional arguments to pass to Java (not the server). |
+| `ServerJar` | **Required** | N/A | string | The name of the server JAR file. Do not include the path. |
+| `ServerArgs` | Optional | `""` | string | Additional arguments to pass to the server (not Java). |
+| `AutoStart` | Optional | `true` | bool | Whether to start the Minecraft server when SMSM starts. |
+| `BackupsToKeep` | Optional | `20` | int | The number of backup ZIP files to keep. If there are more than this number, the oldest ones will be deleted until this number is reached. |
+| `BackupExclusions` | Optional | None | string array | A list of non-case-sensitive exclusion patterns for files and directories to exclude from being backed up. Wildcards are supported, such as `?`,`*`,`**`. |
+| `Schedule` | Optional | None | object array | A list of scheduled tasks that SMSM will do, regardless of whether the Minecraft server is running or not. See the below section for further details. |
 
 ## Commands
 These are used both by the remote management tool, and by the task scheduler.

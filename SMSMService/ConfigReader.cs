@@ -21,6 +21,7 @@ public class ConfigReader
         string JavaArgs = ReadProperty(JSON, "JavaArgs", "", false);
         string? ServerJar = ReadProperty<string?>(JSON, "ServerJar", null, true);
         string ServerArgs = ReadProperty(JSON, "ServerArgs", "", false);
+        bool AutoStart = ReadProperty(JSON, "AutoStart", true, false);
         int BackupsToKeep = ReadProperty(JSON, "BackupsToKeep", 20, true);
         string[] BackupExclusions = ReadArray(JSON, "BackupExclusions", Array.Empty<string>(), false);
 
@@ -117,6 +118,7 @@ public class ConfigReader
         SMSM.JavaArgs = Arguments;
         SMSM.ServerDir = ServerDir;
         SMSM.ServerName = Name;
+        SMSM.AutoStart = AutoStart;
         Scheduler.Tasks = Schedule;
         BackupTask.MaxBackupCount = BackupsToKeep;
         BackupTask.Exclusions = BackupExclusions;
@@ -133,8 +135,11 @@ public class ConfigReader
     /// <returns>A property value, either from JSON or the default</returns>
     private static T ReadProperty<T>(JObject source, string name, T defaultValue, bool warnIfNotFound)
     {
-        T? Result = source.Value<T>(name);
-        if (Result != null) { return Result; }
+        if (source.ContainsKey(name))
+        {
+            T? Result = source.Value<T>(name);
+            if (Result != null) { return Result; }
+        }
             
         if (warnIfNotFound) { Log.Warn($"'{name}' was not found in the config file. Using defautl value of '{defaultValue}'."); }
         return defaultValue;

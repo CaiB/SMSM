@@ -3,7 +3,8 @@
 namespace SMSMService;
 public class SMSM : BackgroundService
 {
-    public const bool USE_NOGUI = false; // Only used for debugging purposes.
+    public const bool USE_NOGUI = true; // Only disabled for debugging purposes.
+    public static string? ConfigFile;
     public static string? JavaPath;
     public static string? JavaArgs;
     public static string? ServerDir;
@@ -20,7 +21,8 @@ public class SMSM : BackgroundService
     {
         TaskHandler.AddTasks();
 
-        bool ConfigResult = ConfigReader.ReadConfig("config.json");
+        if (ConfigFile == null) { return; }
+        bool ConfigResult = ConfigReader.ReadConfig(ConfigFile);
         if (!ConfigResult)
         {
             Log.Error("The configuration could not be parsed, and SMSM will now exit.");

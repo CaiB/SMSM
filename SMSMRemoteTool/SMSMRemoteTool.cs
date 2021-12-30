@@ -39,6 +39,7 @@ public static class SMSMRemoteTool
             }
             PipeRW.WriteLine(UserInput);
         }
+        Stop();
     }
 
     public static void Stop()

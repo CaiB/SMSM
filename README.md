@@ -154,3 +154,10 @@ Every Wednesday at 01:50, except if it is the 1st of the month:
     }
 ]
 ```
+
+
+### Known Issues
+- Starting the remote tool before the SMSM service is ready will cause it to connect, but will not be able to send commands, and will cause the service to lose its server process.
+    - Recommended workaround: Do not start the remote tool when the SMSM service isn't running.
+- The service does not gracefully shut down the Minecraft server if Windows is shutting down.
+    - Recommended workaround: Stop the server via the remote tool, or stop the service via `services.msc` before shutting down or restarting Windows.

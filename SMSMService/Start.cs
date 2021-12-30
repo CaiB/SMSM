@@ -8,7 +8,14 @@ public static class Start
         SMSM.ConfigFile = args[0];
 
         string LogDate = DateTime.Now.ToString("yyyy-MM-dd\\_HH-mm-ss");
-        try { Log.LogFile = new StreamWriter(File.Create($"C:\\Games\\Minecraft\\LTS\\SMSMLog-{LogDate}.txt")) { AutoFlush = true }; }
+        try
+        {
+            string ExePath = AppDomain.CurrentDomain.BaseDirectory ?? "";
+            string LogFileName = $"SMSMLog-{Environment.UserName}-{LogDate}.txt";
+            string LogFilePath = Path.Combine(ExePath, LogFileName);
+            Log.Info($"Attempting to log to \"{LogFilePath}\"");
+            Log.LogFile = new StreamWriter(File.Create(LogFilePath)) { AutoFlush = true };
+        }
         catch (Exception Exc)
         {
             Log.Error("Could not create log file.");

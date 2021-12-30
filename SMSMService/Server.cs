@@ -29,9 +29,9 @@ public static class Server
             ServerProc.OutputDataReceived += ServerOutputHandler;
             ServerProc.ErrorDataReceived += ServerErrorHandler;
             ServerProc.Start();
+            ServerReady = true;
             ServerProc.BeginOutputReadLine();
             ServerProc.BeginErrorReadLine();
-            ServerReady = true;
             Log.Info($"Server process started as PID {ServerProc.Id}");
             return true;
         }
@@ -64,6 +64,7 @@ public static class Server
 
     private static void ServerExitHandler(object? sender, EventArgs evt)
     {
+        ServerReady = false;
         Log.Info("Server process exited.");
         if (ServerProc != null && ServerProc.HasExited) { ServerProc = null; }
     }

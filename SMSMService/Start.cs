@@ -6,6 +6,15 @@ public static class Start
     {
         if (args.Length != 1) { Console.WriteLine("Please specify the config file path as command-line argument."); Environment.Exit(-3); }
         SMSM.ConfigFile = args[0];
+
+        string LogDate = DateTime.Now.ToString("yyyy-MM-dd\\_HH-mm-ss");
+        try { Log.LogFile = new StreamWriter(File.Create($"C:\\Games\\Minecraft\\LTS\\SMSMLog-{LogDate}.txt")) { AutoFlush = true }; }
+        catch (Exception Exc)
+        {
+            Log.Error("Could not create log file.");
+            Log.Error(Exc.ToString());
+        }
+
         //Console.TreatControlCAsInput = true;
 
         IHost host = Host.CreateDefaultBuilder(args)

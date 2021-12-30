@@ -15,8 +15,9 @@ public class SMSM : BackgroundService
     private readonly ILogger<SMSM> Logger;
     private readonly IHostApplicationLifetime Lifetime;
 
-    public SMSM(ILogger<SMSM> logger, IHostApplicationLifetime lifetime)
+    public SMSM(ILogger<SMSM> logger, IHostApplicationLifetime lifetime) // TODO: Get the logger to output to the Windows event log, and redirect output there.
     {
+        Log.Info("SMSM initializing");
         this.Logger = logger;
         this.Lifetime = lifetime;
         this.Lifetime.ApplicationStopping.Register(Stop);

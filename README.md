@@ -25,7 +25,7 @@ Prerequisite: [.NET 6](https://dotnet.microsoft.com/en-us/)
 - Open an **Administrative** PowerShell window, and `cd` to the location where you placed SMSM.
 - Run `.\Install-SMSM.ps1` and answer the prompts. Don't close this window when done.
 - Your service should now be installed. Verify by using `services.msc`, look for the name `Minecraft Server ____ (SMSM)`. It should be stopped, do not start it yet.
-- Assign the user `NT Service\<Name>` (as shown by the install script) write permissions to the folder where SMSM is installed, as well as the entire Minecraft server folder and all contents. This is the service account that the server will run under, and it has minimal permissions.
+- Assign the user `NT Service\SMSM-<Name>` (as shown by the install script) write permissions to the folder where SMSM is installed, as well as the entire Minecraft server folder and all contents. This is the service account that the server will run under, and it has minimal permissions.
 - Start the service. This is only required this first time, it will auto-start at boot from now on.
 - Make sure the service shows as `Running`, and you receive no errors trying to start it.
 - Your Minecraft server should be running. You're done!
